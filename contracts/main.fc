@@ -1,0 +1,15 @@
+ #include "imports/stdlib.fc";
+
+() recv_internal(int msg_value, cell in_msg, slice in_msg_body) impure {
+    slice cs = in_msg.begin_parse();       ;; Parse the incoming message cell.
+    int flags = cs~load_uint(4);          ;; Load 4 bits of flags (specific to TON messaging format).
+    slice sender_address = cs~load_msg_addr(); ;; Extract the sender's address from the message.
+
+    set_data(begin_cell().store_slice(sender_address).end_cell());
+}
+
+
+slice get_the_latest_sender() method_id {
+    slice ds = get_data().begin_parse();  ;; Load the contract's persistent storage.
+    return ds~load_msg_addr();            ;; Retrieve and return the sender's address.
+}
